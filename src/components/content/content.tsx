@@ -25,6 +25,7 @@ export const Content = ({ menuView }: ContentProps) => {
     const bookList = useAppSelector(getBookList);
     const bookCategories = useAppSelector(getBookCategories);
     const { filter, isSortedDesc } = useAppSelector(searchSelector);
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         dispatch(bookListRequest());
@@ -61,6 +62,24 @@ export const Content = ({ menuView }: ContentProps) => {
             setData(sortedByRating);
         }
     }, [category, filter, bookList, isSortedDesc, activeCategory]);
+
+    useEffect(() => {
+        const scrollHandler = (event: any) => {
+            const { innerHeight } = window;
+            const { scrollTop } = event.target.documentElement;
+            const { offsetHeight } = event.target.documentElement;
+
+            if (scrollTop + innerHeight >= offsetHeight) {
+                setCurrentPage((currentPage: number) => currentPage + 1);
+            }
+        };
+
+        document.addEventListener('scroll', scrollHandler);
+
+        return () => {
+            document.removeEventListener('scroll', scrollHandler);
+        };
+    }, [currentPage]);
 
     return (
         <main data-test-id='content'>
