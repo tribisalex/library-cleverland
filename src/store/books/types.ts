@@ -122,6 +122,7 @@ export type BookCategoriesItem = {
     name: string;
     path: string;
     id: number;
+    booksCount: number;
 };
 
 export type BookingModalPayload = {
