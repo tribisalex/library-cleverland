@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { MenuViewEnum } from '../../constants/menu-view';
 import { NAV_MENU_ALL } from '../../constants/nav-menu-list';
-import { bookListRequest } from '../../store/books';
+import { bookListPaginationRequest,bookListRequest } from '../../store/books';
 import { getBookCategories, getBookList } from '../../store/books/selectors';
 import { BookListItem } from '../../store/books/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -27,10 +27,6 @@ export const Content = ({ menuView }: ContentProps) => {
     const { filter, isSortedDesc } = useAppSelector(searchSelector);
     const [currentPage, setCurrentPage] = useState(1);
 
-    useEffect(() => {
-        dispatch(bookListRequest());
-    }, [dispatch]);
-
     const listClassName = classNames(
         menuView === MenuViewEnum.window ? styles.viewWindow : styles.viewList,
     );
@@ -43,25 +39,12 @@ export const Content = ({ menuView }: ContentProps) => {
         });
     }, [category, bookCategories]);
 
-    useEffect(() => {
-        if (bookList) {
-            const filteredByCategory =
-                category === NAV_MENU_ALL.category
-                    ? bookList
-                    : bookList.filter(({ categories }) => categories?.includes(activeCategory));
-
-            const searchResult =
-                filter.length > 0
-                    ? filteredByCategory.filter(({ title }) => title.toLowerCase().includes(filter))
-                    : filteredByCategory;
-
-            const sortedByRating = [...searchResult].sort((a, b) =>
-                isSortedDesc ? b.rating - a.rating : a.rating - b.rating,
-            );
-
-            setData(sortedByRating);
-        }
-    }, [category, filter, bookList, isSortedDesc, activeCategory]);
+    const getBooksPagination = () => {
+        // dispatch(bookListRequest());
+        dispatch(
+            bookListPaginationRequest(`?pagination[page]=${currentPage}&pagination[pageSize]=12`),
+        );
+    };
 
     useEffect(() => {
         const scrollHandler = (event: any) => {
@@ -79,7 +62,43 @@ export const Content = ({ menuView }: ContentProps) => {
         return () => {
             document.removeEventListener('scroll', scrollHandler);
         };
+    }, [currentPage, dispatch]);
+
+    useEffect(() => {
+        getBooksPagination();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
+
+    useEffect(() => {
+        if (category !== activeCategory) {
+            // dispatch(bookListRequestClean());
+
+            if (currentPage === 1) {
+                getBooksPagination();
+            } else {
+                setCurrentPage(1);
+            }
+        }
+
+        setActiveCategory(category as string);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [category, activeCategory, dispatch]);
+
+    useEffect(() => {
+        if (bookList) {
+            const searchResult =
+                filter.length > 0
+                    ? bookList.filter(({ title }) => title.toLowerCase().includes(filter))
+                    : bookList;
+
+            const sortedByRating = [...searchResult].sort((a, b) =>
+                isSortedDesc ? b.rating - a.rating : a.rating - b.rating,
+            );
+
+            setData(sortedByRating);
+        }
+    }, [filter, bookList, isSortedDesc, activeCategory]);
 
     return (
         <main data-test-id='content'>

@@ -27,9 +27,12 @@ import {
     bookingRequestFailure,
     bookingRequestSuccess,
     bookingUpdateRequest,
+    bookListPaginationRequest,
+    bookListPaginationRequestSuccess,
     bookListRequest,
     bookListRequestFailure,
     bookListRequestSuccess,
+    // bookListPaginationRequestFailure,
     bookRequest,
     bookRequestFailure,
     bookRequestSuccess,
@@ -41,14 +44,29 @@ import {
     bookReviewUpdateSuccess,
 } from '.';
 
-function* bookListRequestWorker() {
+// function* bookListRequestWorker() {
+//     try {
+//         const response: AxiosResponse<BookListItem[]> = yield call(
+//             axiosInstance.get,
+//             BOOKS_URL.list,
+//         );
+//
+//         yield put(bookListRequestSuccess(response.data));
+//     } catch {
+//         yield put(bookListRequestFailure());
+//         yield put(setToast({ type: TOAST.error, text: ERROR.book }));
+//     }
+// }
+
+function* bookListRequestPaginationWorker({ payload }: PayloadAction<string>) {
     try {
         const response: AxiosResponse<BookListItem[]> = yield call(
             axiosInstance.get,
-            BOOKS_URL.list,
+            `${BOOKS_URL.list}${payload}`,
+            // BOOKS_URL.list,
         );
 
-        yield put(bookListRequestSuccess(response.data));
+        yield put(bookListPaginationRequestSuccess(response.data));
     } catch {
         yield put(bookListRequestFailure());
         yield put(setToast({ type: TOAST.error, text: ERROR.book }));
@@ -260,8 +278,12 @@ function* bookReviewUpdateWorker({ payload }: PayloadAction<UpdateCommentPayload
     }
 }
 
-export function* watchBookListRequest() {
-    yield takeLatest(bookListRequest, bookListRequestWorker);
+// export function* watchBookListRequest() {
+//     yield takeLatest(bookListRequest, bookListRequestWorker);
+// }
+
+export function* watchBookListPaginationRequest() {
+    yield takeLatest(bookListPaginationRequest, bookListRequestPaginationWorker);
 }
 
 export function* watchBookRequest() {

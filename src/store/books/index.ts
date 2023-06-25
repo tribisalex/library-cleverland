@@ -80,6 +80,24 @@ export const booksSlice = createSlice({
             state.bookList.data = null;
         },
 
+        bookListPaginationRequest: (state, action: PayloadAction<string>) => {
+            state.bookList.isLoading = true;
+        },
+        bookListPaginationRequestSuccess: (state, action: PayloadAction<BookListItem[]>) => {
+            state.bookList.isLoading = false;
+            state.bookList.isError = false;
+            state.bookList.isSuccess = true;
+            state.bookList.data = state.bookList.data
+                ? [...state.bookList.data, ...action.payload]
+                : action.payload;
+        },
+        // bookListPaginationRequestFailure: (state) => {
+        //     state.bookList.isLoading = false;
+        //     state.bookList.isError = true;
+        //     state.bookList.isSuccess = false;
+        //     state.bookList.data = null;
+        // },
+
         bookRequest: (state, action: PayloadAction<string | number>) => {
             state.book.isLoading = true;
         },
@@ -229,6 +247,9 @@ export const {
     bookListRequest,
     bookListRequestSuccess,
     bookListRequestFailure,
+    bookListPaginationRequest,
+    bookListPaginationRequestSuccess,
+    // bookListPaginationRequestFailure,
     bookRequest,
     bookRequestSuccess,
     bookRequestFailure,
