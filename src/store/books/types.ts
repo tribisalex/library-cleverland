@@ -6,6 +6,7 @@ export type BooksType = {
         isSuccess: boolean;
         isError: boolean;
         data: null | BookListItem[];
+        isAllDownloaded: boolean;
     };
     book: {
         isLoading: boolean;

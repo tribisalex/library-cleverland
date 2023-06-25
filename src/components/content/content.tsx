@@ -4,8 +4,8 @@ import classNames from 'classnames';
 
 import { MenuViewEnum } from '../../constants/menu-view';
 import { NAV_MENU_ALL } from '../../constants/nav-menu-list';
-import { bookListPaginationRequest,bookListRequest } from '../../store/books';
-import { getBookCategories, getBookList } from '../../store/books/selectors';
+import { bookListPaginationRequest, bookListPaginationRequestClean } from '../../store/books';
+import { getBookCategories, getBookList, getBookListIsAll } from '../../store/books/selectors';
 import { BookListItem } from '../../store/books/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { searchSelector } from '../../store/search/selectors';
@@ -24,12 +24,17 @@ export const Content = ({ menuView }: ContentProps) => {
     const { category } = useParams();
     const bookList = useAppSelector(getBookList);
     const bookCategories = useAppSelector(getBookCategories);
+    const isAllDownloaded = useAppSelector(getBookListIsAll);
     const { filter, isSortedDesc } = useAppSelector(searchSelector);
     const [currentPage, setCurrentPage] = useState(1);
 
     const listClassName = classNames(
         menuView === MenuViewEnum.window ? styles.viewWindow : styles.viewList,
     );
+
+    useEffect(() => {
+        dispatch(bookListPaginationRequestClean());
+    }, [dispatch]);
 
     useEffect(() => {
         bookCategories?.forEach(({ name, path }) => {
@@ -39,10 +44,14 @@ export const Content = ({ menuView }: ContentProps) => {
         });
     }, [category, bookCategories]);
 
-    const getBooksPagination = () => {
-        // dispatch(bookListRequest());
+    const getBookListPagination = () => {
+        const filters =
+            category === NAV_MENU_ALL.category ? '' : `&filters[categories][path][$eq]=${category}`;
+
         dispatch(
-            bookListPaginationRequest(`?pagination[page]=${currentPage}&pagination[pageSize]=12`),
+            bookListPaginationRequest(
+                `?pagination[page]=${currentPage}&pagination[pageSize]=12${filters}`,
+            ),
         );
     };
 
@@ -52,7 +61,7 @@ export const Content = ({ menuView }: ContentProps) => {
             const { scrollTop } = event.target.documentElement;
             const { offsetHeight } = event.target.documentElement;
 
-            if (scrollTop + innerHeight >= offsetHeight) {
+            if (scrollTop + innerHeight >= offsetHeight && !isAllDownloaded) {
                 setCurrentPage((currentPage: number) => currentPage + 1);
             }
         };
@@ -62,19 +71,19 @@ export const Content = ({ menuView }: ContentProps) => {
         return () => {
             document.removeEventListener('scroll', scrollHandler);
         };
-    }, [currentPage, dispatch]);
+    }, [isAllDownloaded]);
 
     useEffect(() => {
-        getBooksPagination();
+        getBookListPagination();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
 
     useEffect(() => {
         if (category !== activeCategory) {
-            // dispatch(bookListRequestClean());
+            dispatch(bookListPaginationRequestClean());
 
             if (currentPage === 1) {
-                getBooksPagination();
+                getBookListPagination();
             } else {
                 setCurrentPage(1);
             }
