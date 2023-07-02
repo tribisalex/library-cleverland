@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import classNames from 'classnames';
 
+import { BOOKS_URL } from '../../constants/api';
 import { MenuViewEnum } from '../../constants/menu-view';
 import { NAV_MENU_ALL } from '../../constants/nav-menu-list';
-import { bookListRequest } from '../../store/books';
-import { getBookCategories, getBookList } from '../../store/books/selectors';
+import { bookListPaginationRequest, bookListPaginationRequestClean } from '../../store/books';
+import { getBookCategories, getBookList, getBookListIsAll } from '../../store/books/selectors';
 import { BookListItem } from '../../store/books/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { searchSelector } from '../../store/search/selectors';
@@ -24,15 +25,17 @@ export const Content = ({ menuView }: ContentProps) => {
     const { category } = useParams();
     const bookList = useAppSelector(getBookList);
     const bookCategories = useAppSelector(getBookCategories);
+    const isAllDownloaded = useAppSelector(getBookListIsAll);
     const { filter, isSortedDesc } = useAppSelector(searchSelector);
-
-    useEffect(() => {
-        dispatch(bookListRequest());
-    }, [dispatch]);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const listClassName = classNames(
         menuView === MenuViewEnum.window ? styles.viewWindow : styles.viewList,
     );
+
+    useEffect(() => {
+        dispatch(bookListPaginationRequestClean());
+    }, [dispatch]);
 
     useEffect(() => {
         bookCategories?.forEach(({ name, path }) => {
@@ -42,17 +45,61 @@ export const Content = ({ menuView }: ContentProps) => {
         });
     }, [category, bookCategories]);
 
+    const getBookListPagination = () => {
+        const filters = category === NAV_MENU_ALL.category ? '' : `${BOOKS_URL.filters}${category}`;
+
+        dispatch(
+            bookListPaginationRequest(
+                `${BOOKS_URL.paginationPage}${currentPage}${BOOKS_URL.pageSize}${filters}`,
+            ),
+        );
+    };
+
+    useEffect(() => {
+        const scrollHandler = (event: any) => {
+            const { innerHeight } = window;
+            const { scrollTop } = event.target.documentElement;
+            const { offsetHeight } = event.target.documentElement;
+
+            if (scrollTop + innerHeight >= offsetHeight && !isAllDownloaded) {
+                setCurrentPage((currentPage: number) => currentPage + 1);
+            }
+        };
+
+        document.addEventListener('scroll', scrollHandler);
+
+        return () => {
+            document.removeEventListener('scroll', scrollHandler);
+        };
+    }, [isAllDownloaded]);
+
+    useEffect(() => {
+        getBookListPagination();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage]);
+
+    useEffect(() => {
+        if (category !== activeCategory) {
+            dispatch(bookListPaginationRequestClean());
+
+            if (currentPage === 1) {
+                getBookListPagination();
+            } else {
+                setCurrentPage(1);
+            }
+        }
+
+        setActiveCategory(category as string);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [category, activeCategory, dispatch]);
+
     useEffect(() => {
         if (bookList) {
-            const filteredByCategory =
-                category === NAV_MENU_ALL.category
-                    ? bookList
-                    : bookList.filter(({ categories }) => categories?.includes(activeCategory));
-
             const searchResult =
                 filter.length > 0
-                    ? filteredByCategory.filter(({ title }) => title.toLowerCase().includes(filter))
-                    : filteredByCategory;
+                    ? bookList.filter(({ title }) => title.toLowerCase().includes(filter))
+                    : bookList;
 
             const sortedByRating = [...searchResult].sort((a, b) =>
                 isSortedDesc ? b.rating - a.rating : a.rating - b.rating,
@@ -60,7 +107,7 @@ export const Content = ({ menuView }: ContentProps) => {
 
             setData(sortedByRating);
         }
-    }, [category, filter, bookList, isSortedDesc, activeCategory]);
+    }, [filter, bookList, isSortedDesc, activeCategory]);
 
     return (
         <main data-test-id='content'>

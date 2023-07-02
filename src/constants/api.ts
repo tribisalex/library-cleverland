@@ -6,6 +6,9 @@ export const BOOKS_URL = {
     list: `${BASE_URL}/books`,
     item: `${BASE_URL}/books`,
     categories: `${BASE_URL}/categories`,
+    filters: '&filters[categories][path][$eq]=',
+    paginationPage: '?pagination[page]=',
+    pageSize: '&pagination[pageSize]=12',
     booking: `${BASE_URL}/bookings`,
     comment: `${BASE_URL}/comments`,
 };

@@ -37,18 +37,6 @@ export const Navigation = ({
 
     const [isMenuBook, setMenuBook] = useState(true);
 
-    const booksCount = (cat: string) => {
-        let result = 0;
-
-        bookList?.forEach(({ categories }) => {
-            if (categories.includes(cat)) {
-                result += 1;
-            }
-        });
-
-        return result;
-    };
-
     useEffect(() => {
         setMenuBook(!!bookCategories && !!bookList);
     }, [bookCategories, bookList]);
@@ -112,7 +100,7 @@ export const Navigation = ({
                         </NavLink>
                     </li>
                     {isMenuBook &&
-                        bookCategories?.map(({ name, path, id }) => (
+                        bookCategories?.map(({ name, path, id, booksCount }) => (
                             <li key={id}>
                                 <NavLink
                                     to={`${NAV_MENU_MAIN.books.path}/${path}`}
@@ -134,7 +122,7 @@ export const Navigation = ({
                                     )}
                                     data-test-id={`${dataTestid}-book-count-for-${path}`}
                                 >
-                                    {booksCount(name)}
+                                    {booksCount}
                                 </span>
                             </li>
                         ))}
