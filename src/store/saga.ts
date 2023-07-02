@@ -11,7 +11,6 @@ import {
     watchBookingDeleteRequest,
     watchBookingRequest,
     watchBookingUpdateRequest,
-    // watchBookListRequest,
     watchBookListPaginationRequest,
     watchBookRequest,
     watchBookReviewRequest,
@@ -21,7 +20,6 @@ import { watchUserRequest } from './user/sagas';
 
 export function* rootSaga() {
     yield all([
-        // fork(watchBookListRequest),
         fork(watchBookListPaginationRequest),
         fork(watchBookRequest),
         fork(watchUserRequest),

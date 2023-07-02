@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import classNames from 'classnames';
 
+import { BOOKS_URL } from '../../constants/api';
 import { MenuViewEnum } from '../../constants/menu-view';
 import { NAV_MENU_ALL } from '../../constants/nav-menu-list';
 import { bookListPaginationRequest, bookListPaginationRequestClean } from '../../store/books';
@@ -45,12 +46,11 @@ export const Content = ({ menuView }: ContentProps) => {
     }, [category, bookCategories]);
 
     const getBookListPagination = () => {
-        const filters =
-            category === NAV_MENU_ALL.category ? '' : `&filters[categories][path][$eq]=${category}`;
+        const filters = category === NAV_MENU_ALL.category ? '' : `${BOOKS_URL.filters}${category}`;
 
         dispatch(
             bookListPaginationRequest(
-                `?pagination[page]=${currentPage}&pagination[pageSize]=12${filters}`,
+                `${BOOKS_URL.paginationPage}${currentPage}${BOOKS_URL.pageSize}${filters}`,
             ),
         );
     };

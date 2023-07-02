@@ -263,10 +263,6 @@ function* bookReviewUpdateWorker({ payload }: PayloadAction<UpdateCommentPayload
     }
 }
 
-// export function* watchBookListRequest() {
-//     yield takeLatest(bookListRequest, bookListRequestWorker);
-// }
-
 export function* watchBookListPaginationRequest() {
     yield takeLatest(bookListPaginationRequest, bookListRequestPaginationWorker);
 }
