@@ -4,7 +4,10 @@ import { SearchParams } from './types';
 
 export const initialState: SearchParams = {
     filter: '',
-    isSortedDesc: true,
+    method: '',
+    isSortedByRatingDesc: true,
+    isSortedByAuthorDesc: true,
+    isSortedByNameDesc: true,
 };
 
 export const searchSlice = createSlice({
@@ -14,10 +17,25 @@ export const searchSlice = createSlice({
         searchbookList: (state, action: PayloadAction<string>) => {
             state.filter = action.payload;
         },
-        setSortMethod: (state) => {
-            state.isSortedDesc = !state.isSortedDesc;
+        setSortMethod: (state, action: PayloadAction<string>) => {
+            state.method = action.payload;
+        },
+        setSortByRatingMethod: (state) => {
+            state.isSortedByRatingDesc = !state.isSortedByRatingDesc;
+        },
+        setSortByAuthorMethod: (state) => {
+            state.isSortedByAuthorDesc = !state.isSortedByAuthorDesc;
+        },
+        setSortByNameMethod: (state) => {
+            state.isSortedByNameDesc = !state.isSortedByNameDesc;
         },
     },
 });
 
-export const { searchbookList, setSortMethod } = searchSlice.actions;
+export const {
+    searchbookList,
+    setSortByRatingMethod,
+    setSortByAuthorMethod,
+    setSortByNameMethod,
+    setSortMethod,
+} = searchSlice.actions;

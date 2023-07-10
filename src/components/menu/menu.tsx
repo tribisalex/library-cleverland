@@ -4,9 +4,10 @@ import classNames from 'classnames';
 import { MenuViewEnum } from '../../constants/menu-view';
 import { getBookList } from '../../store/books/selectors';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setSortMethod } from '../../store/search';
+import { setSortByRatingMethod } from '../../store/search';
 import { searchSelector } from '../../store/search/selectors';
 import { Button } from '../button';
+import { DropdownSort } from '../dropdown-sort';
 import { Search } from '../search';
 
 import displayList from './assets/icon-line.svg';
@@ -25,13 +26,15 @@ export type MenyProps = {
 
 export const Menu = ({ menuView, setMenuView }: MenyProps) => {
     const [isSearhView, setSearhView] = useState(true);
-    const { isSortedDesc } = useAppSelector(searchSelector);
+    // const {isSortedByRatingDesc, isSortedByAuthorDesc, isSortedByNameDesc} = useAppSelector(searchSelector);
     const bookList = useAppSelector(getBookList);
     const dispatch = useAppDispatch();
 
-    const handleSort = () => {
-        dispatch(setSortMethod());
-    };
+    const options = [
+        { value: 'byRating', label: 'По рейтингу' },
+        { value: 'byAuthor', label: 'По автору' },
+        { value: 'byName', label: 'По названию' },
+    ];
 
     return (
         <div className={classNames(styles.menu, !isSearhView && styles.menuSearh)}>
@@ -44,17 +47,8 @@ export const Menu = ({ menuView, setMenuView }: MenyProps) => {
                         )}
                     >
                         <Search isSearhView={isSearhView} setSearhView={setSearhView} />
-                        <Button
-                            classButton={classNames(
-                                styles.buttonSort,
-                                !isSearhView && styles.buttonHidden,
-                            )}
-                            onClick={handleSort}
-                            dataTestId='sort-rating-button'
-                        >
-                            <img src={isSortedDesc ? sortDesc : sortAsc} alt='icon-sort' />
-                            <span className={styles.buttonSortText}>По рейтингу</span>
-                        </Button>
+
+                        <DropdownSort options={options} isSearhView={isSearhView} />
                     </div>
                     {isSearhView && (
                         <div className={styles.display}>
