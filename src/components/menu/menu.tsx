@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import { MenuViewEnum } from '../../constants/menu-view';
 import { getBookList } from '../../store/books/selectors';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { useAppSelector } from '../../store/hooks';
 import { Button } from '../button';
 import { DropdownSort } from '../dropdown-sort';
 import { Search } from '../search';
@@ -54,15 +54,14 @@ export const Menu = ({ menuView, setMenuView }: MenyProps) => {
                         <div className={styles.display} style={{ border: '2px solid red' }}>
                             <div className={classNames(styles.displayCheck)}>
                                 <div>
-                                    <label>
-                                        <input
-                                            className={classNames(styles.check)}
-                                            type='checkbox'
-                                            checked={checked}
-                                            onChange={handleChangeCheck}
-                                        />
-                                        Скрыть бронь
-                                    </label>
+                                    <input
+                                        className={classNames(styles.check)}
+                                        type='checkbox'
+                                        id='booking'
+                                        checked={checked}
+                                        onChange={handleChangeCheck}
+                                    />
+                                    <label htmlFor='booking'>Скрыть бронь</label>
                                 </div>
                                 {viewList ? (
                                     <Button
