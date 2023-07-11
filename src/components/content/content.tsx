@@ -64,7 +64,6 @@ export const Content = ({ menuView }: ContentProps) => {
             const { offsetHeight } = event.target.documentElement;
 
             if (scrollTop + innerHeight >= offsetHeight - 50 && !isAllDownloaded && !isLoading) {
-                console.log('Change', currentPage);
                 setCurrentPage((currentPage: number) => currentPage + 1);
             }
         };

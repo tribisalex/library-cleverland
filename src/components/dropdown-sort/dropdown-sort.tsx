@@ -1,4 +1,4 @@
-import React, { MouseEvent,useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -58,7 +58,13 @@ export const DropdownSort = ({ options, isSearhView }: DropdownSortProps) => {
     };
 
     return (
-        <div className={classNames(styles.dropdownContainer, showMenu && styles.active)}>
+        <div
+            className={classNames(
+                styles.dropdownContainer,
+                showMenu && styles.active,
+                !isSearhView && styles.dropdownContainerHidden,
+            )}
+        >
             <div
                 className={classNames(styles.dropdownInput)}
                 role='presentation'
