@@ -18,9 +18,10 @@ import styles from './menu.module.scss';
 export type MenyProps = {
     menuView: MenuViewEnum;
     setMenuView: (onChangeText: MenuViewEnum) => void;
+    onBookingCheck: () => void;
 };
 
-export const Menu = ({ menuView, setMenuView }: MenyProps) => {
+export const Menu = ({ menuView, setMenuView, onBookingCheck }: MenyProps) => {
     const [isSearhView, setSearhView] = useState(true);
     const bookList = useAppSelector(getBookList);
     const [checked, setChecked] = useState(false);
@@ -31,10 +32,6 @@ export const Menu = ({ menuView, setMenuView }: MenyProps) => {
         { value: 'byAuthor', label: 'По автору' },
         { value: 'byName', label: 'По названию' },
     ];
-
-    const handleChangeCheck = () => {
-        setChecked(!checked);
-    };
 
     return (
         <div className={classNames(styles.menu, !isSearhView && styles.menuSearh)}>
@@ -51,15 +48,16 @@ export const Menu = ({ menuView, setMenuView }: MenyProps) => {
                         <DropdownSort options={options} isSearhView={isSearhView} />
                     </div>
                     {isSearhView && (
-                        <div className={styles.display} style={{ border: '2px solid red' }}>
+                        <div className={styles.display}>
                             <div className={classNames(styles.displayCheck)}>
-                                <div>
+                                <div className={classNames(styles.checkBlock)}>
                                     <input
                                         className={classNames(styles.check)}
                                         type='checkbox'
                                         id='booking'
                                         checked={checked}
-                                        onChange={handleChangeCheck}
+                                        onClick={onBookingCheck}
+                                        onChange={() => setChecked(!checked)}
                                     />
                                     <label htmlFor='booking'>Скрыть бронь</label>
                                 </div>

@@ -16,9 +16,10 @@ import styles from './content.module.scss';
 
 type ContentProps = {
     menuView: string;
+    checkBooking: boolean;
 };
 
-export const Content = ({ menuView }: ContentProps) => {
+export const Content = ({ menuView, checkBooking }: ContentProps) => {
     const [data, setData] = useState<BookListItem[] | null>(null);
     const [activeCategory, setActiveCategory] = useState('');
     const dispatch = useAppDispatch();
@@ -26,7 +27,6 @@ export const Content = ({ menuView }: ContentProps) => {
     const bookList = useAppSelector(getBookList);
     const bookCategories = useAppSelector(getBookCategories);
     const isAllDownloaded = useAppSelector(getBookListIsAll);
-    const isLoading = useAppSelector(getBookListIsAll);
     const { filter, isSortedByRatingDesc, isSortedByAuthorDesc, isSortedByNameDesc, method } =
         useAppSelector(searchSelector);
     const [currentPage, setCurrentPage] = useState(1);
@@ -63,7 +63,7 @@ export const Content = ({ menuView }: ContentProps) => {
             const { scrollTop } = event.target.documentElement;
             const { offsetHeight } = event.target.documentElement;
 
-            if (scrollTop + innerHeight >= offsetHeight - 50 && !isAllDownloaded && !isLoading) {
+            if (scrollTop + innerHeight >= offsetHeight - 50 && !isAllDownloaded) {
                 setCurrentPage((currentPage: number) => currentPage + 1);
             }
         };
@@ -197,9 +197,11 @@ export const Content = ({ menuView }: ContentProps) => {
                         )}
                         data-test-id='cards-list'
                     >
-                        {data?.map((book) => (
-                            <Card data={book} key={book.id} menuView={menuView} />
-                        ))}
+                        {data
+                            ?.filter((book) => (checkBooking ? book.booking === null : book))
+                            .map((book) => (
+                                <Card data={book} key={book.id} menuView={menuView} />
+                            ))}
                     </ul>
                 ))}
         </main>
