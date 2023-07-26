@@ -12,7 +12,6 @@ export const MainPage = () => {
 
     const onBookingCheck = () => {
         setCheckBooking(!checkBooking);
-        console.log(checkBooking);
     };
 
     return (

@@ -37,6 +37,34 @@
     text-align: start;
 }
 
+.showSortMethod {
+    width: 200px;
+    font-size: 12px;
+    background-repeat: no-repeat;
+    background-position: 16px 50%;
+    height: 26px;
+    margin-top: 10px;
+    padding: 0 5px;
+    background-color: var(--background-main);
+    box-shadow: none;
+    border-radius: 599px;
+    border: 1px solid #e3e3e3;
+    color: var(--subtitle);
+    transition: box-shadow 0.2s linear;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.showSortText {
+    margin: 0;
+}
+
+.iconAction {
+    cursor: pointer;
+}
+
 .searchSortBlock {
     display: grid;
     grid-template-columns: max-content max-content;

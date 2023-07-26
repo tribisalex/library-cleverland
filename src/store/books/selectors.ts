@@ -6,6 +6,7 @@ export const getBookList = (state: RootState) => state.books.bookList.data;
 export const getBookData = (state: RootState) => state.books.book.data;
 export const getBookDataState = (state: RootState) => state.books.book;
 export const getLoadingBooksList = (state: RootState) => state.books.bookList.isLoading;
+export const getSortBy = (state: RootState) => state.books.bookList.sortBy;
 export const getBookListIsAll = (state: RootState) => state.books.bookList.isAllDownloaded;
 export const getLoadingBook = (state: RootState) => state.books.book.isLoading;
 export const getLoadingBookCategories = (state: RootState) => state.books.bookCategories.isLoading;

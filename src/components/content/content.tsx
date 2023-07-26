@@ -5,7 +5,11 @@ import classNames from 'classnames';
 import { BOOKS_URL } from '../../constants/api';
 import { MenuViewEnum } from '../../constants/menu-view';
 import { NAV_MENU_ALL } from '../../constants/nav-menu-list';
-import { bookListPaginationRequest, bookListPaginationRequestClean } from '../../store/books';
+import {
+    bookListPaginationRequest,
+    bookListPaginationRequestClean,
+    sortingBy,
+} from '../../store/books';
 import { getBookCategories, getBookList, getBookListIsAll } from '../../store/books/selectors';
 import { BookListItem } from '../../store/books/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -154,14 +158,18 @@ export const Content = ({ menuView, checkBooking }: ContentProps) => {
 
             if (method === 'byRating') {
                 setData(sortedByRating);
+                dispatch(sortingBy('byRating'));
             } else if (method === 'byAuthor') {
                 setData(sortedByAuthor);
+                dispatch(sortingBy('byAuthor'));
             } else if (method === 'byName') {
                 setData(sortedByName);
+                dispatch(sortingBy('byName'));
             } else {
                 setData(sortedByRating);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         filter,
         bookList,
