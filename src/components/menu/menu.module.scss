@@ -37,6 +37,34 @@
     text-align: start;
 }
 
+.showSortMethod {
+    width: 200px;
+    font-size: 12px;
+    background-repeat: no-repeat;
+    background-position: 16px 50%;
+    height: 26px;
+    margin-top: 10px;
+    padding: 0 5px;
+    background-color: var(--background-main);
+    box-shadow: none;
+    border-radius: 599px;
+    border: 1px solid #e3e3e3;
+    color: var(--subtitle);
+    transition: box-shadow 0.2s linear;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.showSortText {
+    margin: 0;
+}
+
+.iconAction {
+    cursor: pointer;
+}
+
 .searchSortBlock {
     display: grid;
     grid-template-columns: max-content max-content;
@@ -52,6 +80,70 @@
     grid-template-columns: max-content max-content;
     justify-content: end;
     column-gap: 16px;
+}
+
+.displayCheck {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.checkBlock {
+    margin: 0 25px 0 0;
+}
+
+.check {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.check + label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.check + label::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 1px solid #c3c3c3;
+    border-radius: 8px;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+}
+
+.check:checked + label::before {
+    border-color: #ff5253;
+    background-color: #ff5253;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+}
+
+.check:not(:disabled):not(:checked) + label:hover::before {
+    border-color: rgba(255, 82, 83, 0.33);
+}
+.check:not(:disabled):active + label::before {
+    background-color: rgba(255, 82, 83, 0.66);
+}
+.check:focus + label::before {
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 255, 0.125);
+}
+.check:focus:not(:checked) + label::before {
+    border-color: #c3c3c3;
+}
+.check:disabled + label::before {
+    background-color: grey;
 }
 
 .buttonDisplay {
@@ -97,6 +189,7 @@
         height: 38px;
         padding: 0;
         justify-content: center;
+
         .buttonSortText {
             display: none;
         }

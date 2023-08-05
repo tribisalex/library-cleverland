@@ -7,6 +7,7 @@ export type BooksType = {
         isError: boolean;
         data: null | BookListItem[];
         isAllDownloaded: boolean;
+        sortBy: string;
     };
     book: {
         isLoading: boolean;

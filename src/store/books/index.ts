@@ -23,6 +23,7 @@ export const initialState: BooksType = {
         isError: false,
         data: null,
         isAllDownloaded: false,
+        sortBy: '',
     },
     book: {
         isLoading: false,
@@ -101,6 +102,9 @@ export const booksSlice = createSlice({
             state.bookList.data = null;
         },
 
+        sortingBy: (state, action: PayloadAction<string>) => {
+            state.bookList.sortBy = action.payload;
+        },
         bookRequest: (state, action: PayloadAction<string | number>) => {
             state.book.isLoading = true;
         },
@@ -254,6 +258,7 @@ export const {
     bookListPaginationRequestSuccess,
     bookListPaginationAll,
     bookListPaginationRequestClean,
+    sortingBy,
     bookRequest,
     bookRequestSuccess,
     bookRequestFailure,

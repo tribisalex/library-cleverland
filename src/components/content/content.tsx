@@ -5,7 +5,11 @@ import classNames from 'classnames';
 import { BOOKS_URL } from '../../constants/api';
 import { MenuViewEnum } from '../../constants/menu-view';
 import { NAV_MENU_ALL } from '../../constants/nav-menu-list';
-import { bookListPaginationRequest, bookListPaginationRequestClean } from '../../store/books';
+import {
+    bookListPaginationRequest,
+    bookListPaginationRequestClean,
+    sortingBy,
+} from '../../store/books';
 import { getBookCategories, getBookList, getBookListIsAll } from '../../store/books/selectors';
 import { BookListItem } from '../../store/books/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -16,9 +20,10 @@ import styles from './content.module.scss';
 
 type ContentProps = {
     menuView: string;
+    checkBooking: boolean;
 };
 
-export const Content = ({ menuView }: ContentProps) => {
+export const Content = ({ menuView, checkBooking }: ContentProps) => {
     const [data, setData] = useState<BookListItem[] | null>(null);
     const [activeCategory, setActiveCategory] = useState('');
     const dispatch = useAppDispatch();
@@ -26,7 +31,8 @@ export const Content = ({ menuView }: ContentProps) => {
     const bookList = useAppSelector(getBookList);
     const bookCategories = useAppSelector(getBookCategories);
     const isAllDownloaded = useAppSelector(getBookListIsAll);
-    const { filter, isSortedDesc } = useAppSelector(searchSelector);
+    const { filter, isSortedByRatingDesc, isSortedByAuthorDesc, isSortedByNameDesc, method } =
+        useAppSelector(searchSelector);
     const [currentPage, setCurrentPage] = useState(1);
 
     const listClassName = classNames(
@@ -61,7 +67,7 @@ export const Content = ({ menuView }: ContentProps) => {
             const { scrollTop } = event.target.documentElement;
             const { offsetHeight } = event.target.documentElement;
 
-            if (scrollTop + innerHeight >= offsetHeight && !isAllDownloaded) {
+            if (scrollTop + innerHeight >= offsetHeight - 50 && !isAllDownloaded) {
                 setCurrentPage((currentPage: number) => currentPage + 1);
             }
         };
@@ -71,6 +77,7 @@ export const Content = ({ menuView }: ContentProps) => {
         return () => {
             document.removeEventListener('scroll', scrollHandler);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAllDownloaded]);
 
     useEffect(() => {
@@ -102,12 +109,76 @@ export const Content = ({ menuView }: ContentProps) => {
                     : bookList;
 
             const sortedByRating = [...searchResult].sort((a, b) =>
-                isSortedDesc ? b.rating - a.rating : a.rating - b.rating,
+                isSortedByRatingDesc ? b.rating - a.rating : a.rating - b.rating,
             );
 
-            setData(sortedByRating);
+            const sortedByAuthor = isSortedByAuthorDesc
+                ? [...searchResult].sort((a, b) => {
+                      if (a.authors > b.authors) {
+                          return 1;
+                      }
+                      if (a.authors < b.authors) {
+                          return -1;
+                      }
+
+                      return 0;
+                  })
+                : [...searchResult].sort((a, b) => {
+                      if (b.authors > a.authors) {
+                          return 1;
+                      }
+                      if (b.authors < a.authors) {
+                          return -1;
+                      }
+
+                      return 0;
+                  });
+
+            const sortedByName = isSortedByNameDesc
+                ? [...searchResult].sort((a, b) => {
+                      if (a.title > b.title) {
+                          return 1;
+                      }
+                      if (a.title < b.title) {
+                          return -1;
+                      }
+
+                      return 0;
+                  })
+                : [...searchResult].sort((a, b) => {
+                      if (b.title > a.title) {
+                          return 1;
+                      }
+                      if (b.title < a.title) {
+                          return -1;
+                      }
+
+                      return 0;
+                  });
+
+            if (method === 'byRating') {
+                setData(sortedByRating);
+                dispatch(sortingBy('byRating'));
+            } else if (method === 'byAuthor') {
+                setData(sortedByAuthor);
+                dispatch(sortingBy('byAuthor'));
+            } else if (method === 'byName') {
+                setData(sortedByName);
+                dispatch(sortingBy('byName'));
+            } else {
+                setData(sortedByRating);
+            }
         }
-    }, [filter, bookList, isSortedDesc, activeCategory]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        filter,
+        bookList,
+        isSortedByRatingDesc,
+        isSortedByAuthorDesc,
+        isSortedByNameDesc,
+        method,
+        activeCategory,
+    ]);
 
     return (
         <main data-test-id='content'>
@@ -134,9 +205,11 @@ export const Content = ({ menuView }: ContentProps) => {
                         )}
                         data-test-id='cards-list'
                     >
-                        {data?.map((book) => (
-                            <Card data={book} key={book.id} menuView={menuView} />
-                        ))}
+                        {data
+                            ?.filter((book) => (checkBooking ? book.booking === null : book))
+                            .map((book) => (
+                                <Card data={book} key={book.id} menuView={menuView} />
+                            ))}
                     </ul>
                 ))}
         </main>
